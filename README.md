@@ -14,12 +14,25 @@ lookup_type - The lookup type, either 'url' or 'hash' for a URL or File hash. De
 target - Where you want the data to go within the event structure. Default: virustotal
 
 ```
+input {
+  generator {
+    type => "generated"
+    #message => '99017f6eebbac24f351415dd410d522d'
+    message => "http://www.google.com"
+    count => 1
+  }
+}
+
 filter {
   virustotal {
     apikey => '[API KEY]'
     field => "message"
     lookup_type => "url"
   }
+}
+
+output {
+    stdout { codec => rubydebug }
 }
 ```
 
