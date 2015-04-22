@@ -13,7 +13,7 @@ field - the field that contains the resource you want to query for
 lookup_type - The lookup type, either 'url' or 'hash' for a URL or File hash. Default: hash
 target - Where you want the data to go within the event structure. Default: virustotal
 
-'''
+```
 filter {
   virustotal {
     apikey => '[API KEY]'
@@ -21,7 +21,7 @@ filter {
     lookup_type => "url"
   }
 }
-'''
+```
 
 ## Need Help?
 
