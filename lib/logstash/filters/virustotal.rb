@@ -1,6 +1,7 @@
 # encoding: utf-8
 require "logstash/filters/base"
 require "logstash/namespace"
+require "json"
 
 # This example filter will replace the contents of the default 
 # message field with whatever you specify in the configuration.
@@ -30,12 +31,14 @@ class LogStash::Filters::VirusTotal < LogStash::Filters::Base
   public
   def filter(event)
 
-    if @lookup_type = "hash"
+    if @lookup_type == "hash"
       url = "https://www.virustotal.com/vtapi/v2/file/report"
-      response = Faraday.get @url, { :resource => event[@field], :apikey => @apikey }
-      result = JSON.parse(response.body)
-      event[@target] = result
+    elsif @lookup_type == "url"
+      url = "https://www.virustotal.com/vtapi/v2/url/report"
     end
+    response = Faraday.get url, { :resource => event[@field], :apikey => @apikey }
+    result = JSON.parse(response.body)
+    event[@target] = result
 
     # filter_matched should go in the last line of our successful code
     filter_matched(event)
