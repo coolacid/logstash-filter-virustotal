@@ -6,14 +6,28 @@ It is fully free and fully open source. The license is Apache 2.0, meaning you a
 
 ## Documentation
 
-Logstash provides infrastructure to automatically generate documentation for this plugin. We use the asciidoc format to write documentation so any comments in the source code will be first converted into asciidoc and then into html. All plugin documentation are placed under one [central location](http://www.elasticsearch.org/guide/en/logstash/current/).
+Options:
 
-- For formatting code or config example, you can use the asciidoc `[source,ruby]` directive
-- For more asciidoc formatting tips, see the excellent reference here https://github.com/elasticsearch/docs#asciidoc-guide
+apikey - This is your API Key from Virustotal
+field - the field that contains the resource you want to query for 
+lookup_type - The lookup type, either 'url' or 'hash' for a URL or File hash. Default: hash
+target - Where you want the data to go within the event structure. Default: virustotal
+
+'''
+filter {
+  virustotal {
+    apikey => '[API KEY]'
+    field => "message"
+    lookup_type => "url"
+  }
+}
+'''
 
 ## Need Help?
 
 Need help? Try #logstash on freenode IRC or the logstash-users@googlegroups.com mailing list.
+
+Need help specificly to this plugin? Find @coolacid on Freenode IRC or twitter.
 
 ## Developing
 
