@@ -23,6 +23,9 @@ class LogStash::Filters::VirusTotal < LogStash::Filters::Base
   # Where you want the data to be placed
   config :target, :validate => :string, :default => "virustotal"
 
+  # Timeout waiting for resopnse
+  config :timeout, :validate => :number, :default => 5
+
   public
   def register
     require "faraday"
@@ -31,16 +34,31 @@ class LogStash::Filters::VirusTotal < LogStash::Filters::Base
   public
   def filter(event)
 
-    if @lookup_type == "hash"
-      url = "https://www.virustotal.com/vtapi/v2/file/report"
-    elsif @lookup_type == "url"
-      url = "https://www.virustotal.com/vtapi/v2/url/report"
-    end
-    response = Faraday.get url, { :resource => event[@field], :apikey => @apikey }
-    result = JSON.parse(response.body)
-    event[@target] = result
+    baseurl = "https://www.virustotal.com"
 
-    # filter_matched should go in the last line of our successful code
-    filter_matched(event)
+    if @lookup_type == "hash"
+      url = "/vtapi/v2/file/report"
+    elsif @lookup_type == "url"
+      url = "/vtapi/v2/url/report"
+    end
+
+    connection = Faraday.new baseurl
+    begin
+      response = connection.get url do |req|
+        req.params[:resource] = event[@field]
+        req.params[:apikey] = @apikey
+        req.options.timeout = @timeout
+        req.options.open_timeout = @timeout
+      end
+      result = JSON.parse(response.body)
+      event[@target] = result
+      # filter_matched should go in the last line of our successful code
+      filter_matched(event)
+
+    rescue Faraday::TimeoutError
+      @logger.error("Timeout trying to contact virustotal")
+
+    end
+
   end # def filter
 end # class LogStash::Filters::Example
