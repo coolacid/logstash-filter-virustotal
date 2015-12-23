@@ -41,26 +41,28 @@ class LogStash::Filters::VirusTotal < LogStash::Filters::Base
     elsif @lookup_type == "url"
       url = "/vtapi/v2/url/report"
     elsif @lookup_type == "ip"
-	  url = "/vtapi/v2/ip-address/report"
+          url = "/vtapi/v2/ip-address/report"
     end
 
     connection = Faraday.new baseurl
     begin
       response = connection.get url do |req|
-	    if @lookup_type == "ip"
-		  req.params[:ip] = event[@field]
-		else
-		  req.params[:resource] = event[@field]
-		end
+            if @lookup_type == "ip"
+                  req.params[:ip] = event[@field]
+                else
+                  req.params[:resource] = event[@field]
+                end
         req.params[:resource] = event[@field]
         req.params[:apikey] = @apikey
         req.options.timeout = @timeout
         req.options.open_timeout = @timeout
       end
-      result = JSON.parse(response.body)
-      event[@target] = result
-      # filter_matched should go in the last line of our successful code
-      filter_matched(event)
+      if response.body.length > 2
+          result = JSON.parse(response.body)
+          event[@target] = result
+          # filter_matched should go in the last line of our successful code
+          filter_matched(event)
+      end
 
     rescue Faraday::TimeoutError
       @logger.error("Timeout trying to contact virustotal")
