@@ -40,11 +40,18 @@ class LogStash::Filters::VirusTotal < LogStash::Filters::Base
       url = "/vtapi/v2/file/report"
     elsif @lookup_type == "url"
       url = "/vtapi/v2/url/report"
+    elsif @lookup_type == "ip"
+	  url = "/vtapi/v2/ip-address/report"
     end
 
     connection = Faraday.new baseurl
     begin
       response = connection.get url do |req|
+	    if @lookup_type == "ip"
+		  req.params[:ip] = event[@field]
+		else
+		  req.params[:resource] = event[@field]
+		end
         req.params[:resource] = event[@field]
         req.params[:apikey] = @apikey
         req.options.timeout = @timeout
