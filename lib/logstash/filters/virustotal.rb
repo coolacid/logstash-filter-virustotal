@@ -3,17 +3,17 @@ require "logstash/filters/base"
 require "logstash/namespace"
 require "json"
 
-# This example filter will replace the contents of the default 
+# This example filter will replace the contents of the default
 # message field with whatever you specify in the configuration.
 #
 # It is only intended to be used as an example.
 class LogStash::Filters::VirusTotal < LogStash::Filters::Base
 
   config_name "virustotal"
-  
+
   # Your VirusTotal API Key
   config :apikey, :validate => :string, :required => true
-  
+
   # For filed containing the item to lookup. This can point to a field ontaining a File Hash or URL
   config :field, :validate => :string, :required => true
 
@@ -48,18 +48,18 @@ class LogStash::Filters::VirusTotal < LogStash::Filters::Base
     begin
       response = connection.get url do |req|
             if @lookup_type == "ip"
-                  req.params[:ip] = event[@field]
+                  req.params[:ip] = event.get(@field)
                 else
-                  req.params[:resource] = event[@field]
+                  req.params[:resource] = event.get(@field)
                 end
-        req.params[:resource] = event[@field]
+        req.params[:resource] = event.get(@field)
         req.params[:apikey] = @apikey
         req.options.timeout = @timeout
         req.options.open_timeout = @timeout
       end
       if response.body.length > 2
           result = JSON.parse(response.body)
-          event[@target] = result
+          event.set(@target, result)
           # filter_matched should go in the last line of our successful code
           filter_matched(event)
       end
