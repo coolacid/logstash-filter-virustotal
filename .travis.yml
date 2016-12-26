@@ -1,7 +1,14 @@
-sudo: false
-language: ruby
-cache: bundler
-rvm:
-  - jruby-1.7.23
-script: 
-  - bundle exec rspec spec
+{
+  "sudo": false,
+  "jdk": "oraclejdk8",
+  "language": "ruby",
+  "cache": "bundler",
+  "rvm": "jruby-1.7.25",
+  "before_install": [],
+  "script": [
+    "bundle exec rspec spec"
+  ],
+  "group": "stable",
+  "dist": "precise",
+  "os": "linux"
+}
