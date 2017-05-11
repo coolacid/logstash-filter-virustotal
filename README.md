@@ -1,46 +1,19 @@
 # Logstash Plugin
 
-This is a plugin for [Logstash](https://github.com/elasticsearch/logstash).
+This is a plugin for [Logstash](https://github.com/elastic/logstash).
 
 It is fully free and fully open source. The license is Apache 2.0, meaning you are pretty much free to use it however you want in whatever way.
 
 ## Documentation
 
-Options:
+Logstash provides infrastructure to automatically generate documentation for this plugin. We use the asciidoc format to write documentation so any comments in the source code will be first converted into asciidoc and then into html. All plugin documentation are placed under one [central location](http://www.elastic.co/guide/en/logstash/current/).
 
-apikey - This is your API Key from Virustotal
-field - the field that contains the resource you want to query for 
-lookup_type - The lookup type, either 'url' or 'hash' for a URL or File hash. Default: hash
-target - Where you want the data to go within the event structure. Default: virustotal
-
-```
-input {
-  generator {
-    type => "generated"
-    #message => '99017f6eebbac24f351415dd410d522d'
-    message => "http://www.google.com"
-    count => 1
-  }
-}
-
-filter {
-  virustotal {
-    apikey => '[API KEY]'
-    field => "message"
-    lookup_type => "url"
-  }
-}
-
-output {
-    stdout { codec => rubydebug }
-}
-```
+- For formatting code or config example, you can use the asciidoc `[source,ruby]` directive
+- For more asciidoc formatting tips, see the excellent reference here https://github.com/elastic/docs#asciidoc-guide
 
 ## Need Help?
 
-Need help? Try #logstash on freenode IRC or the logstash-users@googlegroups.com mailing list.
-
-Need help specificly to this plugin? Find @coolacid on Freenode IRC or twitter.
+Need help? Try #logstash on freenode IRC or the https://discuss.elastic.co/c/logstash discussion forum.
 
 ## Developing
 
@@ -49,7 +22,7 @@ Need help specificly to this plugin? Find @coolacid on Freenode IRC or twitter.
 #### Code
 - To get started, you'll need JRuby with the Bundler gem installed.
 
-- Create a new plugin or clone and existing from the GitHub [logstash-plugins](https://github.com/logstash-plugins) organization.
+- Create a new plugin or clone and existing from the GitHub [logstash-plugins](https://github.com/logstash-plugins) organization. We also provide [example plugins](https://github.com/logstash-plugins?query=example).
 
 - Install dependencies
 ```sh
@@ -58,26 +31,15 @@ bundle install
 
 #### Test
 
-```sh
-bundle exec rspec
-```
-
-The Logstash code required to run the tests/specs is specified in the `Gemfile` by the line similar to:
-```ruby
-gem "logstash", :github => "elasticsearch/logstash", :branch => "1.5"
-```
-To test against another version or a local Logstash, edit the `Gemfile` to specify an alternative location, for example:
-```ruby
-gem "logstash", :github => "elasticsearch/logstash", :ref => "master"
-```
-```ruby
-gem "logstash", :path => "/your/local/logstash"
-```
-
-Then update your dependencies and run your tests:
+- Update your dependencies
 
 ```sh
 bundle install
+```
+
+- Run tests
+
+```sh
 bundle exec rspec
 ```
 
@@ -85,13 +47,18 @@ bundle exec rspec
 
 #### 2.1 Run in a local Logstash clone
 
-- Edit Logstash `tools/Gemfile` and add the local plugin path, for example:
+- Edit Logstash `Gemfile` and add the local plugin path, for example:
 ```ruby
 gem "logstash-filter-awesome", :path => "/your/local/logstash-filter-awesome"
 ```
-- Update Logstash dependencies
+- Install plugin
 ```sh
-rake vendor:gems
+# Logstash 2.3 and higher
+bin/logstash-plugin install --no-verify
+
+# Prior to Logstash 2.3
+bin/plugin install --no-verify
+
 ```
 - Run Logstash with your plugin
 ```sh
@@ -101,13 +68,20 @@ At this point any modifications to the plugin code will be applied to this local
 
 #### 2.2 Run in an installed Logstash
 
+You can use the same **2.1** method to run your plugin in an installed Logstash by editing its `Gemfile` and pointing the `:path` to your local plugin development directory or you can build the gem and install it using:
+
 - Build your plugin gem
 ```sh
 gem build logstash-filter-awesome.gemspec
 ```
 - Install the plugin from the Logstash home
 ```sh
-bin/plugin install /your/local/plugin/logstash-filter-awesome.gem
+# Logstash 2.3 and higher
+bin/logstash-plugin install --no-verify
+
+# Prior to Logstash 2.3
+bin/plugin install --no-verify
+
 ```
 - Start Logstash and proceed to test the plugin
 
@@ -117,6 +91,6 @@ All contributions are welcome: ideas, patches, documentation, bug reports, compl
 
 Programming is not a required skill. Whatever you've seen about open source and maintainers or community members  saying "send patches or die" - you will not see that here.
 
-It is more important to me that you are able to contribute.
+It is more important to the community that you are able to contribute.
 
-For more information about contributing, see the [CONTRIBUTING](https://github.com/elasticsearch/logstash/blob/master/CONTRIBUTING.md) file.
+For more information about contributing, see the [CONTRIBUTING](https://github.com/elastic/logstash/blob/master/CONTRIBUTING.md) file.
